@@ -2,15 +2,12 @@ package com.banking.test;
 
 import com.banking.account.Account;
 
-import java.util.Arrays;
-import java.util.Formatter;
-
 public class AccountTest {
     public static void main(String[] args) {
-//        createAccount();
+        createAccount();
         lockTest();
-//        depositTest();
-//        withdrawalTest();
+        depositTest();
+        withdrawalTest();
     }
 
     private static void createAccount() {

@@ -22,7 +22,7 @@ public class Account {
     }
     // Need to format the outputs to show negative values
     public static void transaction(char type, double transactionAmount) {
-        if (lock == false) {
+        if (!lock) {
             if(type == 'd') {
                 balance += transactionAmount;
                 System.out.println("Deposit successful.");
@@ -63,7 +63,7 @@ public class Account {
         if(flag) {
             overdraft = true;
             overdraftLimit = limit;
-        } else if (!flag) {
+        } else {
             overdraft = false;
             overdraftLimit = 0.0d;
 
@@ -78,7 +78,7 @@ public class Account {
             details[2] = name;
             details[3] = overdraftEnquiry();
             return details;
-        } else if(lock) {
+        } else {
             System.out.println("Account is locked. Contact Head Office.");
         }
         return null;
