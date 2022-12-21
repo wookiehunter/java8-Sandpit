@@ -4,9 +4,9 @@ import com.banking.account.Account;
 
 public class AccountTest {
     public static void main(String[] args) {
-        createAccount();
-        lockTest();
-        depositTest();
+        // createAccount();
+        // lockTest();
+        // depositTest();
         withdrawalTest();
     }
 
@@ -38,7 +38,7 @@ public class AccountTest {
 
     private static void withdrawalTest() {
         System.out.println("Withdrawal test start");
-        Account acct1 = new Account("AB123", 1000.10, "Steven Godson");
+        Account acct1 = new Account("AB123", 1200.10, "Steven Godson");
         acct1.setOverdraft(true, 150.00);
         printDetails(acct1);
         acct1.transaction('w', 1100);
