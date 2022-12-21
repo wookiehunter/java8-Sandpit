@@ -27,11 +27,13 @@ public class Account {
                 balance += transactionAmount;
                 System.out.println("Deposit successful.");
             } else if (type == 'w') {
-                if(((balance) - transactionAmount) > (0 - overdraftLimit)) {
+                if(overdraft && (balance - transactionAmount) > (0 - overdraftLimit)) {
                     balance -= transactionAmount;
                     System.out.println("Withdrawal successful.");
                 } else {
-                    System.out.println("Transaction failed as would take you overdrawn!");
+                    System.out.println("Withdrawal failed. " +
+                            "\nYou do not have sufficient overdraft facilities available. " +
+                            "\nSpeak with your local Branch to arrange this.");
                 }
             }
         } else {
@@ -41,7 +43,12 @@ public class Account {
 
     public String balanceEnquiry() {
         NumberFormat formatter = new DecimalFormat("#0.00");
-        return formatter.format(balance + overdraftLimit);
+        return formatter.format(balance);
+    }
+
+    public String overdraftEnquiry() {
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        return formatter.format(overdraftLimit);
     }
 
     public void lockAccount() {
@@ -69,6 +76,7 @@ public class Account {
             details[0] = id;
             details[1] = balanceEnquiry();
             details[2] = name;
+            details[3] = overdraftEnquiry();
             return details;
         } else if(lock) {
             System.out.println("Account is locked. Contact Head Office.");
