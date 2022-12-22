@@ -2,6 +2,9 @@ package com.banking.account;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Account {
     private static String id;
@@ -10,6 +13,8 @@ public class Account {
     private static boolean lock;
     private static boolean overdraft;
     private static double overdraftLimit;
+    static ArrayList<String> transactionHistory = new ArrayList<>();
+
     public Account(String id, double balance, String name) {
         Account.id = id;
         Account.balance = balance;
@@ -17,6 +22,9 @@ public class Account {
         Account.lock = false;
         Account.overdraft = false;
         Account.overdraftLimit = 0.0d;
+        transactionHistory.add("Account_ID: " + id);
+        transactionHistory.add("Account_Owner: " + name);
+        transactionHistory.add("Opening_Balance: " + balance);
     }
     public static void main(String[] args) {
     }
@@ -25,10 +33,12 @@ public class Account {
         if (!lock) {
             if(type == 'd') {
                 balance += transactionAmount;
+                transactionHistory.add("Deposit: " + transactionAmount);
                 System.out.println("Deposit successful.");
             } else if (type == 'w') {
-                if(overdraft && (balance - transactionAmount) > (0 - overdraftLimit)) {
+                if(overdraft && (balance - transactionAmount) >= (0 - overdraftLimit)) {
                     balance -= transactionAmount;
+                    transactionHistory.add("Withdrawal: " + transactionAmount);
                     System.out.println("Withdrawal successful.");
                 } else {
                     System.out.println("Withdrawal failed. " +
@@ -41,12 +51,12 @@ public class Account {
         }
     }
 
-    public String balanceEnquiry() {
+    private String balanceEnquiry() {
         NumberFormat formatter = new DecimalFormat("#0.00");
         return formatter.format(balance);
     }
 
-    public String overdraftEnquiry() {
+    private String overdraftEnquiry() {
         NumberFormat formatter = new DecimalFormat("#0.00");
         return formatter.format(overdraftLimit);
     }
@@ -63,10 +73,11 @@ public class Account {
         if(flag) {
             overdraft = true;
             overdraftLimit = limit;
+            transactionHistory.add("OD_Limit: " + limit);
         } else {
             overdraft = false;
             overdraftLimit = 0.0d;
-
+            transactionHistory.add("OD_Limit: 0.00");
         }
     }
 
@@ -82,5 +93,10 @@ public class Account {
             System.out.println("Account is locked. Contact Head Office.");
         }
         return null;
+    }
+
+    public static void getTransactionHistory() {
+        for(String o:transactionHistory)
+            System.out.println(o);
     }
 }
