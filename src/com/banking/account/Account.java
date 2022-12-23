@@ -1,10 +1,9 @@
 package com.banking.account;
 
+import java.io.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 public class Account {
     private static String id;
@@ -15,7 +14,7 @@ public class Account {
     private static double overdraftLimit;
     static ArrayList<String> transactionHistory = new ArrayList<>();
 
-    public Account(String id, double balance, String name) {
+    public Account(String id, double balance, String name) throws IOException {
         Account.id = id;
         Account.balance = balance;
         Account.name = name;
@@ -24,27 +23,34 @@ public class Account {
         Account.overdraftLimit = 0.0d;
         transactionHistory.add("Account_ID: " + id);
         transactionHistory.add("Account_Owner: " + name);
-        transactionHistory.add("Opening_Balance: " + balance);
+        transactionHistory.add("Opening_Balance: " + numberFormatter(balance));
+        writeData(transactionHistory);
     }
     public static void main(String[] args) {
     }
     // Need to format the outputs to show negative values
-    public static void transaction(char type, double transactionAmount) {
+    public static void transaction(char type, double transactionAmount) throws IOException {
         if (!lock) {
             if(type == 'd') {
                 balance += transactionAmount;
                 transactionHistory.add("Deposit: " + transactionAmount);
+                transactionHistory.add("Balance: " + numberFormatter(balance));
+                writeData(transactionHistory);
                 System.out.println("Deposit successful.");
             } else if (type == 'w') {
                 if(overdraft && (balance - transactionAmount) >= (0 - overdraftLimit)) {
                     balance -= transactionAmount;
                     transactionHistory.add("Withdrawal: " + transactionAmount);
+                    transactionHistory.add("Balance: " + numberFormatter(balance));
+                    writeData(transactionHistory);
                     System.out.println("Withdrawal successful.");
                 } else {
                     System.out.println("Withdrawal failed. " +
                             "\nYou do not have sufficient overdraft facilities available. " +
                             "\nSpeak with your local Branch to arrange this.");
                 }
+            } else {
+                System.out.println("Invalid Transaction Code. Use d or w.");
             }
         } else {
             System.out.println("Account is locked. Contact Head Office.");
@@ -52,32 +58,50 @@ public class Account {
     }
 
     private String balanceEnquiry() {
-        NumberFormat formatter = new DecimalFormat("#0.00");
-        return formatter.format(balance);
+        if(!lock) {
+            return numberFormatter(balance);
+        } else {
+            System.out.println("Account is locked. Contact Head Office.");
+        }
+        return null;
     }
 
     private String overdraftEnquiry() {
-        NumberFormat formatter = new DecimalFormat("#0.00");
-        return formatter.format(overdraftLimit);
-    }
-
-    public void lockAccount() {
-        lock = true;
-    }
-
-    public void unlockAccount() {
-        lock = false;
-    }
-
-    public void setOverdraft(boolean flag, double limit) {
-        if(flag) {
-            overdraft = true;
-            overdraftLimit = limit;
-            transactionHistory.add("OD_Limit: " + limit);
+        if(!lock) {
+            return numberFormatter(overdraftLimit);
         } else {
-            overdraft = false;
-            overdraftLimit = 0.0d;
-            transactionHistory.add("OD_Limit: 0.00");
+            System.out.println("Account is locked. Contact Head Office.");
+        }
+        return null;
+    }
+
+    public void lockAccount() throws IOException {
+        lock = true;
+        transactionHistory.add("Account Locked");
+        writeData(transactionHistory);
+    }
+
+    public void unlockAccount() throws IOException {
+        lock = false;
+        transactionHistory.add("Account Unlocked");
+        writeData(transactionHistory);
+    }
+
+    public void setOverdraft(boolean flag, double limit) throws IOException {
+        if(!lock) {
+            if(flag) {
+                overdraft = true;
+                overdraftLimit = limit;
+                transactionHistory.add("OD_Limit: " + numberFormatter(limit));
+                writeData(transactionHistory);
+            } else {
+                overdraft = false;
+                overdraftLimit = 0.0d;
+                transactionHistory.add("OD_Limit: 0.00");
+                writeData(transactionHistory);
+            }
+        } else {
+            System.out.println("Account is locked. Contact Head Office.");
         }
     }
 
@@ -95,8 +119,34 @@ public class Account {
         return null;
     }
 
-    public static void getTransactionHistory() {
-        for(String o:transactionHistory)
-            System.out.println(o);
+    public static void getTransactionHistory() throws IOException {
+        if(!lock) {
+            readData();
+        } else {
+            System.out.println("Account is locked. Contact Head Office.");
+        }
+    }
+
+    private static void writeData(ArrayList<String> data) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Account.txt"))) {
+            for (String d:data) {
+                writer.write(d);
+                writer.newLine();
+            }
+        }
+    }
+
+    private static void readData() throws IOException {
+        try (BufferedReader reader = new BufferedReader(new FileReader("Account.txt"))) {
+            String inValue;
+            while ((inValue = reader.readLine()) != null) {
+                System.out.println(inValue);
+            }
+        }
+    }
+
+    private static String numberFormatter(Double value) {
+        NumberFormat formatter = new DecimalFormat("#0.00");
+        return formatter.format(value);
     }
 }
