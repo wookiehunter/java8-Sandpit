@@ -13,6 +13,7 @@ public class Account {
     private static boolean overdraft;
     private static double overdraftLimit;
     static ArrayList<String> transactionHistory = new ArrayList<>();
+    private static String filename = "";
 
     public Account(String id, double balance, String name) throws IOException {
         Account.id = id;
@@ -21,6 +22,7 @@ public class Account {
         Account.lock = false;
         Account.overdraft = false;
         Account.overdraftLimit = 0.0d;
+        Account.filename = id + ".txt";
         transactionHistory.add("Account_ID: " + id);
         transactionHistory.add("Account_Owner: " + name);
         transactionHistory.add("Opening_Balance: " + numberFormatter(balance));
@@ -128,7 +130,7 @@ public class Account {
     }
 
     private static void writeData(ArrayList<String> data) throws IOException {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("Account.txt"))) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filename))) {
             for (String d:data) {
                 writer.write(d);
                 writer.newLine();
@@ -137,7 +139,7 @@ public class Account {
     }
 
     private static void readData() throws IOException {
-        try (BufferedReader reader = new BufferedReader(new FileReader("Account.txt"))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String inValue;
             while ((inValue = reader.readLine()) != null) {
                 System.out.println(inValue);
