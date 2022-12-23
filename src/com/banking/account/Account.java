@@ -12,21 +12,22 @@ public class Account {
     private static boolean lock;
     private static boolean overdraft;
     private static double overdraftLimit;
-    static ArrayList<String> transactionHistory = new ArrayList<>();
+    static ArrayList<String> transactionHistory;
     private static String filename = "";
 
     public Account(String id, double balance, String name) throws IOException {
-        Account.id = id;
-        Account.balance = balance;
-        Account.name = name;
-        Account.lock = false;
-        Account.overdraft = false;
-        Account.overdraftLimit = 0.0d;
-        Account.filename = id + ".txt";
-        transactionHistory.add("Account_ID: " + id);
-        transactionHistory.add("Account_Owner: " + name);
-        transactionHistory.add("Opening_Balance: " + numberFormatter(balance));
-        writeData(transactionHistory);
+        this.id = id;
+        this.balance = balance;
+        this.name = name;
+        this.lock = false;
+        this.overdraft = false;
+        this.overdraftLimit = 0.0d;
+        this.transactionHistory = new ArrayList<>();
+        this.filename = id + ".txt";
+        transactionHistory.add("Account_ID: " + this.id);
+        transactionHistory.add("Account_Owner: " + this.name);
+        transactionHistory.add("Opening_Balance: " + numberFormatter(this.balance));
+        writeData(this.transactionHistory);
     }
     public static void main(String[] args) {
     }
