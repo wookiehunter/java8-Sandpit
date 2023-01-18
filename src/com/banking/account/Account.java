@@ -15,15 +15,15 @@ public class Account {
     static ArrayList<String> transactionHistory;
     private static String filename = "";
 
-    public Account(String id, double balance, String name) throws IOException {
-        this.id = id;
+    public Account(double balance, String name) throws IOException {
+        this.id = AccountID.setID();
         this.balance = balance;
         this.name = name;
         this.lock = false;
         this.overdraft = false;
         this.overdraftLimit = 0.0d;
         this.transactionHistory = new ArrayList<>();
-        this.filename = id + ".txt";
+        this.filename = this.id + ".txt";
         transactionHistory.add("Account_ID: " + this.id);
         transactionHistory.add("Account_Owner: " + this.name);
         transactionHistory.add("Opening_Balance: " + numberFormatter(this.balance));
@@ -139,7 +139,7 @@ public class Account {
         }
     }
 
-    private static void readData() throws IOException {
+    public static void readData() throws IOException {
         try (BufferedReader reader = new BufferedReader(new FileReader(filename))) {
             String inValue;
             while ((inValue = reader.readLine()) != null) {
